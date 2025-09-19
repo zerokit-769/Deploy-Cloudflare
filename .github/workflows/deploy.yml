@@ -34,7 +34,7 @@ jobs:
         echo "Membuat wrangler.toml dari input..."
 
         cat <<EOF > wrangler.toml
-name = "vl"
+
 main = "worker.js"
 compatibility_date = "2024-05-23"
 
