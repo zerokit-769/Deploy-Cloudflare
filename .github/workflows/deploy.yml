@@ -1,58 +1,66 @@
-name: Deploy to Cloudflare (Multi Akun)
+name: Deploy Worker to Cloudflare
 
 on:
+  # Memungkinkan workflow dijalankan secara manual dari GitHub UI
   workflow_dispatch:
     inputs:
-      account_id:
-        description: "Cloudflare Account ID"
+      cloudflare_account_id:
+        description: 'Cloudflare Account ID'
         required: true
-      api_token:
-        description: "Cloudflare API Token"
+        type: string
+      cloudflare_api_token:
+        description: 'Cloudflare API Token'
         required: true
-      domain_prefix:
-        description: "Prefix domain (contoh: siren.afrcloud.site)"
+        type: string
+      main_domain:
+        description: 'Main domain for the worker (e.g., nzr2805.my.id)'
         required: true
+        type: string
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 18
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    - name: Install Wrangler
-      run: npm install -g wrangler
+      - name: Install dependencies
+        run: npm install
 
-    - name: Generate wrangler.toml dynamically
-      run: |
-        echo "Membuat wrangler.toml dari input..."
+      - name: Dynamic Wrangler.toml
+        run: |
+          echo "name = \"vl\"" >> wrangler.toml
+          echo "main = \"worker.js\"" >> wrangler.toml
+          echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
+          echo "workers_dev = true" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "routes = [" >> wrangler.toml
+          echo "  { pattern = \"${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"support.zoom.us.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"ava.game.naver.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"graph.instagram.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"df.game.naver.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"quiz.int.vidio.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"zoomgov.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"api24-normal-alisg.tiktokv.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"zaintest.vuclip.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"help.viu.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"grabacademyportal.grab.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"api22-normal-c-alisg.tiktokv.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"live.iflix.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"store.linefriends.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"cache.netflix.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          echo "  { pattern = \"customlinks.appsflyer.com.${{ inputs.main_domain }}\", custom_domain = true }" >> wrangler.toml
+          echo "]" >> wrangler.toml
 
-        # Bagian statis
-        echo "name = \"vl\"" > wrangler.toml
-        echo "main = \"worker.js\"" >> wrangler.toml
-        echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
 
-        # Bagian dinamis berdasarkan input
-        echo "account_id = \"${{ github.event.inputs.account_id }}\"" >> wrangler.toml
-        echo "workers_dev = true" >> wrangler.toml
-
-        # Routes yang disesuaikan dengan domain prefix
-        echo "routes = [" >> wrangler.toml
-        for domain in "siren" "support.zoom.us" "ava.game.naver.com" "graph.instagram.com" "df.game.naver.com" "quiz.int.vidio.com" "zoomgov.com" "api24-normal-alisg.tiktokv.com" "zaintest.vuclip.com" "help.viu.com" "grabacademyportal.grab.com" "api22-normal-c-alisg.tiktokv.com" "live.iflix.com" "store.linefriends.com" "cache.netflix.com" "customlinks.appsflyer.com"; do
-          echo "  { pattern = \"$domain.\${{ github.event.inputs.domain_prefix }}\", custom_domain = true }," >> wrangler.toml
-        done
-        echo "]" >> wrangler.toml
-
-        echo "wrangler.toml berhasil dibuat:"
-        cat wrangler.toml
-
-    - name: Deploy ke Cloudflare Workers
-      run: wrangler publish
-      env:
-        CLOUDFLARE_API_TOKEN: ${{ github.event.inputs.api_token }}
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ inputs.cloudflare_api_token }}
+          accountId: ${{ inputs.cloudflare_account_id }}
