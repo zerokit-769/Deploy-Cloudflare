@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       worker_name:
-        description: 'Nama Worker'
+        description: 'Nama Worker (opsional)'
         required: false
         type: string
       cloudflare_account_id:
-        description: 'Account ID'
+        description: 'Cloudflare Account ID'
         required: true
         type: string
       cloudflare_api_token:
