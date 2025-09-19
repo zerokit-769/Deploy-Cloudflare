@@ -41,7 +41,11 @@ jobs:
           
       - name: Dynamic Wrangler.toml
         run: |
-          echo "name = \"vl\"" > wrangler.toml
+          # Mengambil bagian domain sebelum .my.id
+          # Contoh: nzr2805.my.id -> nzr2805
+          worker_name=$(echo "${{ inputs.main_domain }}" | cut -d'.' -f1)
+          
+          echo "name = \"$worker_name\"" > wrangler.toml
           echo "main = \"worker.js\"" >> wrangler.toml
           echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
           echo "workers_dev = true" >> wrangler.toml
