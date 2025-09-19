@@ -1,7 +1,6 @@
 name: Deploy Worker to Cloudflare
 
 on:
-  # Memungkinkan workflow dijalankan secara manual dari GitHub UI
   workflow_dispatch:
     inputs:
       cloudflare_account_id:
@@ -29,12 +28,20 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: npm install
-
+      - name: Membuat package.json jika tidak ada
+        id: check_package_json
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "File package.json tidak ditemukan, membuat file baru..."
+            npm init -y
+            npm install wrangler@latest
+          else
+            echo "File package.json sudah ada."
+          fi
+          
       - name: Dynamic Wrangler.toml
         run: |
-          echo "name = \"vl\"" >> wrangler.toml
+          echo "name = \"vl\"" > wrangler.toml
           echo "main = \"worker.js\"" >> wrangler.toml
           echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
           echo "workers_dev = true" >> wrangler.toml
@@ -57,7 +64,6 @@ jobs:
           echo "  { pattern = \"cache.netflix.com.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
           echo "  { pattern = \"customlinks.appsflyer.com.${{ inputs.main_domain }}\", custom_domain = true }" >> wrangler.toml
           echo "]" >> wrangler.toml
-
 
       - name: Deploy to Cloudflare
         uses: cloudflare/wrangler-action@v3
