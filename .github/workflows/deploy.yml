@@ -33,33 +33,21 @@ jobs:
       run: |
         echo "Membuat wrangler.toml dari input..."
 
-        cat <<EOF > wrangler.toml
-name = "vl"
-main = "worker.js"
-compatibility_date = "2024-05-23"
+        # Bagian statis
+        echo "name = \"vl\"" > wrangler.toml
+        echo "main = \"worker.js\"" >> wrangler.toml
+        echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
 
-account_id = "${{ github.event.inputs.account_id }}"
-workers_dev = true
+        # Bagian dinamis berdasarkan input
+        echo "account_id = \"${{ github.event.inputs.account_id }}\"" >> wrangler.toml
+        echo "workers_dev = true" >> wrangler.toml
 
-routes = [
-  { pattern = "siren.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "support.zoom.us.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "ava.game.naver.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "graph.instagram.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "df.game.naver.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "quiz.int.vidio.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "zoomgov.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "api24-normal-alisg.tiktokv.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "zaintest.vuclip.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "help.viu.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "grabacademyportal.grab.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "api22-normal-c-alisg.tiktokv.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "live.iflix.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "store.linefriends.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "cache.netflix.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true },
-  { pattern = "customlinks.appsflyer.com.${{ github.event.inputs.domain_prefix }}", custom_domain = true }
-]
-EOF
+        # Routes yang disesuaikan dengan domain prefix
+        echo "routes = [" >> wrangler.toml
+        for domain in "siren" "support.zoom.us" "ava.game.naver.com" "graph.instagram.com" "df.game.naver.com" "quiz.int.vidio.com" "zoomgov.com" "api24-normal-alisg.tiktokv.com" "zaintest.vuclip.com" "help.viu.com" "grabacademyportal.grab.com" "api22-normal-c-alisg.tiktokv.com" "live.iflix.com" "store.linefriends.com" "cache.netflix.com" "customlinks.appsflyer.com"; do
+          echo "  { pattern = \"$domain.\${{ github.event.inputs.domain_prefix }}\", custom_domain = true }," >> wrangler.toml
+        done
+        echo "]" >> wrangler.toml
 
         echo "wrangler.toml berhasil dibuat:"
         cat wrangler.toml
