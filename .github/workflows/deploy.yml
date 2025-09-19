@@ -3,8 +3,12 @@ name: Deploy Worker to Cloudflare
 on:
   workflow_dispatch:
     inputs:
+      worker_name:
+        description: 'Nama Worker'
+        required: false
+        type: string
       cloudflare_account_id:
-        description: 'Cloudflare Account ID'
+        description: 'Account ID'
         required: true
         type: string
       cloudflare_api_token:
@@ -41,10 +45,13 @@ jobs:
           
       - name: Dynamic Wrangler.toml
         run: |
-          # Mengambil bagian domain sebelum .my.id
-          # Contoh: nzr2805.my.id -> nzr2805
-          worker_name=$(echo "${{ inputs.main_domain }}" | cut -d'.' -f1)
-          
+          # Gunakan nama worker dari input, jika tidak ada, ambil dari domain
+          if [ -n "${{ inputs.worker_name }}" ]; then
+            worker_name="${{ inputs.worker_name }}"
+          else
+            worker_name=$(echo "${{ inputs.main_domain }}" | cut -d'.' -f1)
+          fi
+
           echo "name = \"$worker_name\"" > wrangler.toml
           echo "main = \"worker.js\"" >> wrangler.toml
           echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
