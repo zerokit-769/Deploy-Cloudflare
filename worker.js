@@ -4,11 +4,11 @@ let proxyIP = ""
 
 const ACC = [
   {
-    email: "",
-    apiKey: "", // global API key
-    accountId: "",
-    zoneId: "", // specific zone ID to monitor
-    workerName: "vl", // specific worker name to monitor
+    email: "rmtq@uma3.be",
+    apiKey: "f472373dd6095b4a1fb25745589d7fde63d89", // global API key
+    accountId: "58a8d77398a096cf15d2b8e39e2ad9c3",
+    zoneId: "eecd039818d269c07ec5c0bd168dd1c5", // specific zone ID to monitor
+    workerName: "cloudflared", // specific worker name to monitor
   },
   // Add more accounts as needed
 ]
@@ -70,97 +70,137 @@ async function getBwReqSpecific(period = "7d") {
       let totalBytes = 0
       let totalRequests = 0
       let apiUsed = "unknown"
+
+      // Method 1: Coba Analytics API v1
+      try {
+        const analyticsUrl = `https://api.cloudflare.com/client/v4/zones/${account.zoneId}/analytics/colos`
+        const params = new URLSearchParams({
+          since: `${startDate}T00:00:00Z`,
+          until: `${endDate}T23:59:59Z`,
+        })
+
+        const response = await fetch(`${analyticsUrl}?${params}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Auth-Email": account.email,
+            "X-Auth-Key": account.apiKey,
+          },
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          if (data.success && data.result) {
+            const totals = data.result.totals || {}
+            totalBytes = totals.bytes?.all || 0
+            totalRequests = totals.requests?.all || 0
+            apiUsed = "Analytics API v1"
+          }
+        }
+      } catch (e) {
+        console.log("Analytics API v1 failed:", e.message)
+      }
+
+      // Method 2: Jika method 1 gagal, coba GraphQL
+      if (totalBytes === 0 && totalRequests === 0) {
         try {
-          const queryBandwidth = `
-  query getZoneAnalytics($zoneTag: string!, $since: string!, $until: string!) {
-    viewer {
-      zones(filter: {zoneTag: $zoneTag}) {
-        httpRequests1dGroups(
-          filter: {
-            date_geq: $since
-            date_leq: $until
+          const query = `
+            query getZoneAnalytics($zoneTag: string!, $since: string!, $until: string!) {
+              viewer {
+                zones(filter: {zoneTag: $zoneTag}) {
+                  httpRequests1dGroups(
+                    filter: {
+                      date_geq: $since
+                      date_leq: $until
+                    }
+                    limit: 1000
+                  ) {
+                    sum {
+                      bytes
+                      requests
+                    }
+                  }
+                }
+              }
+            }
+          `
+
+          const response = await fetch("https://api.cloudflare.com/client/v4/graphql", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Auth-Email": account.email,
+              "X-Auth-Key": account.apiKey,
+            },
+            body: JSON.stringify({
+              query,
+              variables: {
+                zoneTag: account.zoneId,
+                since: startDate,
+                until: endDate,
+              },
+            }),
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            if (!data.errors && data.data?.viewer?.zones?.[0]) {
+              const zoneData = data.data.viewer.zones[0]
+              const httpData = zoneData.httpRequests1dGroups || []
+              
+              httpData.forEach(group => {
+                if (group.sum) {
+                  totalBytes += group.sum.bytes || 0
+                  totalRequests += group.sum.requests || 0
+                }
+              })
+              apiUsed = "GraphQL API"
+            }
           }
-          limit: 1000
-        ) {
-          sum {
-            bytes
-          }
-        }
-      }
-    }
-  }
-`
-
-const queryRequests = `
-  query getWorkersRequests($accountTag: string!, $filter: AccountWorkersInvocationsAdaptiveFilter_InputObject) {
-    viewer {
-      accounts(filter: {accountTag: $accountTag}) {
-        workersInvocationsAdaptive(limit: 10000, filter: $filter) {
-          sum {
-            requests
-          }
-        }
-      }
-    }
-  }
-`
-
-const [responseBandwidth, responseRequests] = await Promise.all([
-  fetch("https://api.cloudflare.com/client/v4/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Email": account.email,
-      "X-Auth-Key": account.apiKey,
-    },
-    body: JSON.stringify({
-      query: queryBandwidth,
-      variables: {
-        zoneTag: account.zoneId,
-        since: startDate,
-        until: endDate,
-      },
-    }),
-  }),
-  fetch("https://api.cloudflare.com/client/v4/graphql", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Email": account.email,
-      "X-Auth-Key": account.apiKey,
-    },
-    body: JSON.stringify({
-      query: queryRequests,
-      variables: {
-        accountTag: account.accountId,
-        filter: {
-          date_geq: startDate,
-          date_leq: endDate,
-          scriptName: account.workerName
-        },
-      },
-    }),
-  })
-])
-
-if (responseBandwidth.ok) {
-  const data = await responseBandwidth.json()
-  const httpData = data.data.viewer.zones[0].httpRequests1dGroups || []
-  httpData.forEach(group => {
-    totalBytes += group.sum?.bytes || 0
-  })
-}
-
-if (responseRequests.ok) {
-  const data = await responseRequests.json()
-  const workersData = data.data.viewer.accounts[0].workersInvocationsAdaptive || []
-  workersData.forEach(group => {
-    totalRequests += group.sum?.requests || 0
-  })
-}
         } catch (e) {
           console.log("GraphQL API failed:", e.message)
         }
+      }
+
+      // Method 3: Jika semua gagal, coba endpoint zone stats
+      if (totalBytes === 0 && totalRequests === 0) {
+        try {
+          const statsUrl = `https://api.cloudflare.com/client/v4/zones/${account.zoneId}/analytics/dashboard`
+          const params = new URLSearchParams({
+            since: startDate,
+            until: endDate,
+          })
+
+          const response = await fetch(`${statsUrl}?${params}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Auth-Email": account.email,
+              "X-Auth-Key": account.apiKey,
+            },
+          })
+
+          if (response.ok) {
+            const data = await response.json()
+            if (data.success && data.result) {
+              const timeseries = data.result.timeseries || []
+              const totals = data.result.totals || {}
+              
+              if (timeseries.length > 0) {
+                totalBytes = timeseries.reduce((sum, item) => sum + (item.bandwidth?.all || 0), 0)
+                totalRequests = timeseries.reduce((sum, item) => sum + (item.requests?.all || 0), 0)
+              } else {
+                totalBytes = totals.bandwidth?.all || 0
+                totalRequests = totals.requests?.all || 0
+              }
+              apiUsed = "Dashboard API"
+            }
+          }
+        } catch (e) {
+          console.log("Dashboard API failed:", e.message)
+        }
+      }
+
       if (totalBytes === 0 && totalRequests === 0) {
         throw new Error(`All API methods failed. Check API key permissions and zone ID.`)
       }
