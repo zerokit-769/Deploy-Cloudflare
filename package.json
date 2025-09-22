@@ -1,7 +1,7 @@
 {
   "name": "afrcloud",
   "version": "2.0.0",
-  "description": "Enhanced VLESS proxy worker for Cloudflare Workers with improved reliability and features",
+  "description": "Enhanced VLESS",
   "main": "worker.js",
   "type": "module",
   "scripts": {
