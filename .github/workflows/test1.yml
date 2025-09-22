@@ -32,17 +32,48 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Membuat package.json jika tidak ada
-        id: check_package_json
+      - name: Buat package.json
         run: |
-          if [ ! -f "package.json" ]; then
-            echo "File package.json tidak ditemukan, membuat file baru..."
-            npm init -y
-            npm install wrangler@latest
-          else
-            echo "File package.json sudah ada."
-          fi
-          
+          cat << EOF > package.json
+          {
+            "name": "bolt",
+            "version": "2.0.0",
+            "description": "Enhanced VLESS proxy worker for Cloudflare Workers with improved reliability and features",
+            "main": "worker.js",
+            "type": "module",
+            "scripts": {
+              "dev": "wrangler dev --local",
+              "dev:remote": "wrangler dev",
+              "deploy": "wrangler deploy",
+              "deploy:prod": "wrangler deploy --env production",
+              "tail": "wrangler tail",
+              "tail:prod": "wrangler tail --env production",
+              "publish": "wrangler deploy",
+              "test": "echo \"No tests specified\" && exit 0"
+            },
+            "keywords": [
+              "vless",
+              "proxy",
+              "cloudflare",
+              "worker",
+              "websocket",
+              "tunnel",
+              "vpn"
+            ],
+            "author": "",
+            "license": "MIT",
+            "devDependencies": {
+              "wrangler": "^3.22.0"
+            },
+            "engines": {
+              "node": ">=18.0.0"
+            }
+          }
+          EOF
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Dynamic Wrangler.toml from customdomain.txt
         run: |
           # Buat konfigurasi wrangler.toml dari input yang disediakan
