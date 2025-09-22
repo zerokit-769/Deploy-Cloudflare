@@ -32,7 +32,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Buat package.json
+      - name: Create package.json
         run: |
           cat << EOF > package.json
           {
@@ -76,7 +76,7 @@ jobs:
 
       - name: Dynamic Wrangler.toml from customdomain.txt
         run: |
-          # Buat konfigurasi wrangler.toml dari input yang disediakan
+          # Create wrangler.toml configuration from provided input
           echo "name = \"${{ inputs.worker_name }}\"" > wrangler.toml
           echo "main = \"worker.js\"" >> wrangler.toml
           echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
@@ -100,15 +100,15 @@ jobs:
           echo "routes = [" >> wrangler.toml
           echo "  { pattern = \"${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
 
-          # Loop melalui setiap domain dari customdomain.txt dan tambahkan ke routes
-          while read -r domain; do
+          # Loop through each domain from customdomain.txt, ignoring blank lines
+          grep -vE '^\s*$' customdomain.txt | while read -r domain; do
             echo "  { pattern = \"$domain.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
-          done < customdomain.txt
+          done
 
-          # Hapus koma terakhir dari baris terakhir
+          # Remove the trailing comma from the last line
           sed -i '$ s/,$//' wrangler.toml
           
-          # Tutup array routes
+          # Close the routes array
           echo "]" >> wrangler.toml
 
       - name: Deploy to Cloudflare
