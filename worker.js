@@ -4,7 +4,7 @@
 import { connect } from "cloudflare:sockets";
 
 // Configuration
-let proxyIP = '172.232.238.56';
+let proxyIP = '';
 
 // Constants
 const WS_READY_STATE_OPEN = 1;
@@ -545,147 +545,460 @@ function parseProxyAddress(proxyIP, defaultAddress, defaultPort) {
 
 function getStatusPage() {
   return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VLESS Worker Status</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-        }
-        .status-card {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border-left: 4px solid #28a745;
-        }
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .info-item {
-            background: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .info-label {
-            font-weight: bold;
-            color: #495057;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .info-value {
-            font-size: 1.2em;
-            color: #007bff;
-            margin-top: 5px;
-        }
-        .endpoint {
-            background: #d1ecf1;
-            border-left-color: #17a2b8;
-            font-family: monospace;
-            font-size: 0.9em;
-        }
-        .feature-list {
-            list-style: none;
-            padding: 0;
-        }
-        .feature-list li {
-            padding: 8px 0;
-            border-bottom: 1px solid #dee2e6;
-        }
-        .feature-list li:before {
-            content: "✓";
-            color: #28a745;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>🚀 VLESS Worker</h1>
-        
-        <div class="status-card">
-            <h3>✅ Worker Status: Active</h3>
-            <p>Your VLESS proxy worker is running and ready to handle connections.</p>
-        </div>
-        
-        <div class="info-grid">
-            <div class="info-item">
-                <div class="info-label">Protocol</div>
-                <div class="info-value">VLESS</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Transport</div>
-                <div class="info-value">WebSocket</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">Proxy IP</div>
-                <div class="info-value">${proxyIP || 'Auto'}</div>
-            </div>
-            <div class="info-item">
-                <div class="info-label">DNS Support</div>
-                <div class="info-value">UDP Port 53</div>
-            </div>
-        </div>
-        
-        <div class="status-card">
-            <h3>🔧 Features</h3>
-            <ul class="feature-list">
-                <li>TCP and UDP (DNS) proxy support</li>
-                <li>WebSocket transport with early data</li>
-                <li>Automatic connection retry</li>
-                <li>IPv4, IPv6, and domain name resolution</li>
-                <li>DNS over HTTPS integration</li>
-                <li>Comprehensive error handling and logging</li>
-            </ul>
-        </div>
-        
-        <div class="status-card endpoint">
-            <h3>📡 Endpoints</h3>
-            <p><strong>WebSocket:</strong> wss://your-worker-domain.workers.dev/</p>
-            <p><strong>Health Check:</strong> https://your-worker-domain.workers.dev/health</p>
-            <p><strong>With Proxy IP:</strong> wss://your-worker-domain.workers.dev/proxy-ip:port</p>
-        </div>
-        
-        <div class="status-card">
-            <h3>⚡ Performance</h3>
-            <p>This worker is optimized for:</p>
-            <ul class="feature-list">
-                <li>Low latency connections</li>
-                <li>Efficient memory usage</li>
-                <li>Automatic error recovery</li>
-                <li>Scalable concurrent connections</li>
-            </ul>
-        </div>
-    </div>
-</body>
-</html>
+  <!DOCTYPE html>
+  <html lang="id">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>AFRCloud - NET || Home</title>
+      
+      <link rel="icon" href="https://raw.githubusercontent.com/AFRcloud/BG/main/icons8-film-noir-80.png">
+      
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Rajdhani:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+      
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      
+      <style>
+          /* --- Variabel Global --- */
+          :root {
+              /* Warna */
+              --primary-color: #6a11cb;
+              --secondary-color: #2575fc;
+              --accent-color: #ff6b6b;
+              --success-color: #38ef7d;
+              --dark-bg: #0f0c29;
+              --dark-bg-gradient-1: #302b63;
+              --dark-bg-gradient-2: #24243e;
+              --card-bg: rgba(15, 14, 32, 0.8);
+              --text-primary: #ffffff;
+              --text-secondary: #a0a0ff;
+              --border-color: rgba(255, 255, 255, 0.1);
+  
+              /* UI & Efek */
+              --border-radius-md: 12px;
+              --border-radius-lg: 16px;
+              --glow-primary: 0 0 10px rgba(106, 17, 203, 0.5), 0 0 20px rgba(106, 17, 203, 0.2);
+              --transition-normal: all 0.3s ease;
+          }
+  
+          /* --- Reset & Gaya Dasar --- */
+          * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+          }
+          body {
+              font-family: "Rajdhani", sans-serif;
+              color: var(--text-primary);
+              background: linear-gradient(135deg, var(--dark-bg), var(--dark-bg-gradient-1), var(--dark-bg-gradient-2));
+              background-attachment: fixed;
+              min-height: 100vh;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              padding: 1rem 0;
+              overflow-x: hidden;
+              position: relative;
+          }
+          body::before {
+              content: "";
+              position: fixed;
+              inset: 0;
+              background: radial-gradient(circle at 20% 30%, rgba(106, 17, 203, 0.15) 0%, transparent 40%),
+                          radial-gradient(circle at 80% 70%, rgba(37, 117, 252, 0.15) 0%, transparent 40%);
+              z-index: -1;
+          }
+          a {
+              text-decoration: none;
+              color: inherit;
+          }
+          button {
+              cursor: pointer;
+              border: none;
+              background: none;
+          }
+  
+          /* --- Layout Utama --- */
+          .container {
+              width: 100%;
+              max-width: 480px;
+              padding: 0 0.75rem;
+              margin-bottom: 1rem;
+          }
+  
+          /* --- Kartu Utama --- */
+          .card {
+              background: var(--card-bg);
+              border-radius: var(--border-radius-md);
+              padding: 1.5rem;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+              border: 1px solid rgba(106, 17, 203, 0.1);
+              position: relative;
+              overflow: hidden;
+          }
+          .card::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 3px;
+              background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+          }
+          .title {
+              font-family: "Orbitron", sans-serif;
+              font-weight: 700;
+              font-size: 1.8rem;
+              text-align: center;
+              margin-bottom: 1.5rem;
+              background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+          }
+          .profile-container {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              margin-bottom: 1rem;
+          }
+          .profile-img {
+              width: 120px;
+              height: 120px;
+              border-radius: 50%;
+              object-fit: cover;
+              border: 3px solid transparent;
+              background: linear-gradient(145deg, var(--primary-color), var(--secondary-color)) border-box;
+              box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
+              margin-bottom: 1rem;
+          }
+          .status-badge {
+              background: linear-gradient(45deg, #11998e, var(--success-color));
+              color: white;
+              padding: 6px 15px;
+              border-radius: 20px;
+              font-size: 0.9rem;
+              font-weight: 600;
+              box-shadow: 0 5px 15px rgba(56, 239, 125, 0.3);
+              display: flex;
+              align-items: center;
+              gap: 8px;
+          }
+          .status-badge i {
+              font-size: 0.8rem;
+              animation: blink 2s infinite;
+          }
+          
+          /* --- Daftar Info Protokol (BARU) --- */
+          .info-list {
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              margin-top: 1.5rem;
+          }
+          .info-item {
+              background: rgba(0, 0, 0, 0.2);
+              border: 1px solid rgba(255, 255, 255, 0.05);
+              border-radius: 8px;
+              padding: 12px 16px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+          }
+          .info-label {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              font-size: 0.9rem;
+              color: var(--text-secondary);
+          }
+          .info-label .icon {
+              font-size: 0.9rem;
+              opacity: 0.7;
+              width: 16px;
+              text-align: center;
+          }
+          .info-value {
+              font-family: "Share Tech Mono", monospace;
+              font-weight: 600;
+              font-size: 1rem;
+              color: var(--text-primary);
+              background: rgba(106, 17, 203, 0.1);
+              padding: 4px 8px;
+              border-radius: 4px;
+          }
+  
+          /* --- Footer --- */
+          .footer {
+              width: 100%;
+              max-width: 480px;
+              background: var(--card-bg);
+              border-radius: var(--border-radius-md);
+              padding: 1.2rem;
+              border: 1px solid rgba(106, 17, 203, 0.1);
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+              text-align: center;
+              margin: 0 0.75rem;
+          }
+          .footer-logo {
+              font-family: "Orbitron", sans-serif;
+              font-size: 1.1rem;
+              margin-bottom: 0.4rem;
+              background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+          }
+          .footer-powered {
+              font-size: 0.8rem;
+              color: var(--text-secondary);
+              margin-bottom: 0.6rem;
+              font-family: "Share Tech Mono", monospace;
+          }
+          .footer-social {
+              display: flex;
+              justify-content: center;
+              gap: 0.8rem;
+              margin-bottom: 0.6rem;
+              flex-wrap: wrap;
+          }
+          .social-link {
+              color: var(--primary-color);
+              font-family: "Share Tech Mono", monospace;
+              font-size: 0.8rem;
+              padding: 0.25rem 0.6rem;
+              border-radius: 4px;
+              background: rgba(106, 17, 203, 0.05);
+              border: 1px solid rgba(106, 17, 203, 0.1);
+              transition: var(--transition-normal);
+              display: flex;
+              align-items: center;
+              gap: 0.3rem;
+          }
+          .social-link:hover {
+              background: rgba(106, 17, 203, 0.1);
+              box-shadow: var(--glow-primary);
+              transform: translateY(-2px);
+          }
+          .social-icon {
+              font-size: 14px;
+          }
+          .footer-year {
+              font-family: "Orbitron", sans-serif;
+              font-size: 0.8rem;
+              color: var(--accent-color);
+              margin-top: 0.4rem;
+          }
+  
+          /* --- Tombol & Modal Donasi --- */
+          .donate-btn {
+              position: fixed;
+              bottom: 30px;
+              right: 30px;
+              width: 60px;
+              height: 60px;
+              border-radius: 50%;
+              background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-size: 1.5rem;
+              box-shadow: 0 5px 20px rgba(106, 17, 203, 0.5);
+              z-index: 100;
+              transition: var(--transition-normal);
+              animation: pulse-donate 2s infinite;
+          }
+          .donate-btn:hover {
+              transform: scale(1.1);
+          }
+          .donation-modal {
+              position: fixed;
+              inset: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              z-index: 1001;
+              opacity: 0;
+              visibility: hidden;
+              transition: opacity 0.3s ease;
+          }
+          .donation-modal.active {
+              opacity: 1;
+              visibility: visible;
+          }
+          .donation-backdrop {
+              position: absolute;
+              inset: 0;
+              background: rgba(0, 0, 0, 0.7);
+              backdrop-filter: blur(5px);
+          }
+          .donation-content {
+              position: relative;
+              background: linear-gradient(to bottom right, #1e1e3f, var(--dark-bg));
+              border-radius: var(--border-radius-lg);
+              padding: 1px;
+              width: 90%;
+              max-width: 400px;
+              transform: scale(0.9);
+              transition: transform 0.3s ease;
+          }
+          .donation-modal.active .donation-content {
+              transform: scale(1);
+          }
+          .donation-body {
+              position: relative;
+              background: var(--dark-bg);
+              border-radius: calc(var(--border-radius-lg) - 1px);
+              padding: 24px;
+              text-align: center;
+          }
+          .close-donation {
+              position: absolute;
+              top: 10px;
+              right: 10px;
+              width: 30px;
+              height: 30px;
+              color: var(--text-secondary);
+              background: rgba(255, 255, 255, 0.1);
+              border-radius: 50%;
+              transition: var(--transition-normal);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+          }
+          .close-donation:hover {
+              transform: rotate(90deg);
+          }
+          .donation-title {
+              font-size: 1.5rem;
+              margin-bottom: 8px;
+              background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+              -webkit-background-clip: text;
+              background-clip: text;
+              color: transparent;
+          }
+          .donation-text {
+              color: var(--text-secondary);
+              font-size: 0.9rem;
+              margin-bottom: 20px;
+          }
+          .qris-image {
+              display: block;
+              max-width: 100%;
+              background: white;
+              padding: 10px;
+              border-radius: var(--border-radius-md);
+          }
+  
+          /* --- Animasi --- */
+          @keyframes blink {
+              50% { opacity: 0.5; }
+          }
+          @keyframes pulse-donate {
+              0% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0.7); transform: scale(1); }
+              70% { box-shadow: 0 0 0 15px rgba(106, 17, 203, 0); transform: scale(1.05); }
+              100% { box-shadow: 0 0 0 0 rgba(106, 17, 203, 0); transform: scale(1); }
+          }
+  
+          /* --- Desain Responsif --- */
+          @media (max-width: 480px) {
+              body { padding: 0.5rem 0; }
+              .container { padding: 0 0.5rem; }
+              .title { font-size: 1.5rem; }
+              .profile-img { width: 100px; height: 100px; }
+              .donate-btn { width: 50px; height: 50px; font-size: 1.2rem; bottom: 20px; right: 20px; }
+          }
+      </style>
+  </head>
+  <body>
+  
+      <main class="container">
+          <div class="card">
+              <h1 class="title">AFRCloud - NET</h1>
+              <div class="profile-container">
+                  <img src="https://raw.githubusercontent.com/akulelaki696/bg/refs/heads/main/20250106_010158.jpg" alt="Incognito Mode Profile" class="profile-img">
+                  <div class="status-badge">
+                      <i class="fas fa-circle"></i> Active Services
+                  </div>
+              </div>
+              
+              <div class="info-list">
+                  <div class="info-item">
+                      <span class="info-label"><i class="fas fa-bolt icon"></i> Protokol</span>
+                      <span class="info-value">VLESS</span>
+                  </div>
+                  <div class="info-item">
+                      <span class="info-label"><i class="fas fa-server icon"></i> Proxy IP</span>
+                      <span class="info-value">${proxyIP || 'Auto'}</span>
+                  </div>
+              </div>
+  
+          </div>
+      </main>
+      
+      <footer class="footer">
+          <div class="footer-logo">AFRCloud - NET</div>
+          <div class="footer-powered">POWERED BY SECURE TECHNOLOGY</div>
+          <div class="footer-social">
+              <a href="https://t.me/Noir7R" class="social-link" target="_blank">
+                  <i class="fab fa-telegram social-icon"></i> @Noir7R
+              </a>
+              <a href="https://t.me/inconigto_Mode" class="social-link" target="_blank">
+                  <i class="fab fa-telegram social-icon"></i> @inconigto_Mode
+              </a>
+              <a href="https://t.me/InconigtoMode" class="social-link" target="_blank">
+                  <i class="fab fa-telegram social-icon"></i> @InconigtoMode
+              </a>
+          </div>    
+          <div class="footer-year">© <span id="current-year"></span></div>
+      </footer>
+      
+      <button id="donation-button" class="donate-btn" aria-label="Donasi">
+          <i class="fas fa-hand-holding-heart"></i>
+      </button>
+      
+      <div id="donation-modal" class="donation-modal">
+          <div class="donation-backdrop" id="donation-backdrop"></div>
+          <div class="donation-content">
+              <div class="donation-body">
+                  <button id="close-donation" class="close-donation" aria-label="Tutup">
+                      <i class="fas fa-times"></i>
+                  </button>
+                  <h3 class="donation-title">Support AFRCloud-NET</h3>
+                  <p class="donation-text">Donasi Anda membantu layanan kami tetap berjalan.</p>
+                  <img src="https://raw.githubusercontent.com/AFRcloud/SirenWeb/refs/heads/main/qrcode-0002010102%20(3).jpeg" alt="Donation QR Code" class="qris-image">
+              </div>
+          </div>
+      </div>
+      
+      <script>
+          document.addEventListener("DOMContentLoaded", () => {
+              // Update tahun saat ini
+              const yearSpan = document.getElementById('current-year');
+              if (yearSpan) {
+                  yearSpan.textContent = new Date().getFullYear();
+              }
+  
+              // Logika untuk modal donasi
+              const donationModal = document.getElementById('donation-modal');
+              const openBtn = document.getElementById('donation-button');
+              const closeBtn = document.getElementById('close-donation');
+              const backdrop = document.getElementById('donation-backdrop');
+  
+              const openModal = () => donationModal.classList.add('active');
+              const closeModal = () => donationModal.classList.remove('active');
+  
+              if (donationModal && openBtn && closeBtn && backdrop) {
+                  openBtn.addEventListener('click', openModal);
+                  closeBtn.addEventListener('click', closeModal);
+                  backdrop.addEventListener('click', closeModal);
+              }
+          });
+      </script>
+  </body>
+  </html>
   `;
 }
