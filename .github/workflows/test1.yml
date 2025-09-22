@@ -1,0 +1,87 @@
+name: Deploy 1
+
+on:
+  workflow_dispatch:
+    inputs:
+      worker_name:
+        description: 'Nama Worker'
+        required: true
+        type: string
+      cloudflare_account_id:
+        description: 'Cloudflare Account ID'
+        required: true
+        type: string
+      cloudflare_api_token:
+        description: 'Cloudflare API Token'
+        required: true
+        type: string
+      main_domain:
+        description: 'Main domain for the worker (e.g., nzr2805.my.id)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Membuat package.json jika tidak ada
+        id: check_package_json
+        run: |
+          if [ ! -f "package.json" ]; then
+            echo "File package.json tidak ditemukan, membuat file baru..."
+            npm init -y
+            npm install wrangler@latest
+          else
+            echo "File package.json sudah ada."
+          fi
+          
+      - name: Dynamic Wrangler.toml from customdomain.txt
+        run: |
+          # Buat konfigurasi wrangler.toml dari input yang disediakan
+          echo "name = \"${{ inputs.worker_name }}\"" > wrangler.toml
+          echo "main = \"worker.js\"" >> wrangler.toml
+          echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
+          echo "compatibility_flags = [\"nodejs_compat\"]" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "[env.production]" >> wrangler.toml
+          echo "name = \"vless-worker-prod\"" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "[build]" >> wrangler.toml
+          echo "command = \"\"" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "[vars]" >> wrangler.toml
+          echo "PROXY_IP = \"172.232.238.56\"" >> wrangler.toml
+          echo "DEBUG = \"true\"" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "[[kv_namespaces]]" >> wrangler.toml
+          echo "binding = \"VLESS_CONFIG\"" >> wrangler.toml
+          echo "id = \"243d995a3bba45e5bad6f08a5484c2d8\"" >> wrangler.toml
+          echo "preview_id = \"vless-preview-config-id\"" >> wrangler.toml
+          echo "" >> wrangler.toml
+          echo "routes = [" >> wrangler.toml
+          echo "  { pattern = \"${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+
+          # Loop melalui setiap domain dari customdomain.txt dan tambahkan ke routes
+          while read -r domain; do
+            echo "  { pattern = \"$domain.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
+          done < customdomain.txt
+
+          # Hapus koma terakhir dari baris terakhir
+          sed -i '$ s/,$//' wrangler.toml
+          
+          # Tutup array routes
+          echo "]" >> wrangler.toml
+
+      - name: Deploy to Cloudflare
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ inputs.cloudflare_api_token }}
+          accountId: ${{ inputs.cloudflare_account_id }}
