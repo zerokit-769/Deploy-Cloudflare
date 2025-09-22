@@ -1,4 +1,4 @@
-name: Deploy Cloudflare Worker 2
+name: test1
 
 on:
   workflow_dispatch:
