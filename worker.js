@@ -919,11 +919,11 @@ function getServicePage() {
             <div class="info-list">
                 <div class="info-item">
                     <span class="info-label"><i class="fas fa-bolt icon"></i> Protokol</span>
-                    <span class="info-value"></span>
+                    <span class="info-value">VLESS</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label"><i class="fas fa-server icon"></i> Proxy IP</span>
-                    <span class="info-value">${proxyIP}</span>
+                    <span class="info-value">1.1.1.1</span>
                 </div>
             </div>
         </div>
