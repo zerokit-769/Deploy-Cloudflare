@@ -1,4 +1,4 @@
-name: Deploy 1
+name: Deploy Worker to Cloudflare
 
 on:
   workflow_dispatch:
@@ -32,51 +32,14 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Create package.json
-        run: |
-          cat << EOF > package.json
-          {
-            "name": "bolt",
-            "version": "2.0.0",
-            "description": "Enhanced VLESS proxy worker for Cloudflare Workers with improved reliability and features",
-            "main": "worker.js",
-            "type": "module",
-            "scripts": {
-              "dev": "wrangler dev --local",
-              "dev:remote": "wrangler dev",
-              "deploy": "wrangler deploy",
-              "deploy:prod": "wrangler deploy --env production",
-              "tail": "wrangler tail",
-              "tail:prod": "wrangler tail --env production",
-              "publish": "wrangler deploy",
-              "test": "echo \"No tests specified\" && exit 0"
-            },
-            "keywords": [
-              "vless",
-              "proxy",
-              "cloudflare",
-              "worker",
-              "websocket",
-              "tunnel",
-              "vpn"
-            ],
-            "author": "",
-            "license": "MIT",
-            "devDependencies": {
-              "wrangler": "^3.22.0"
-            },
-            "engines": {
-              "node": ">=18.0.0"
-            }
-          }
-          EOF
-
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install --save-dev wrangler@latest
 
       - name: Dynamic Wrangler.toml from customdomain.txt
         run: |
-          # Create wrangler.toml configuration from provided input
+          # Buat konfigurasi wrangler.toml
           echo "name = \"${{ inputs.worker_name }}\"" > wrangler.toml
           echo "main = \"worker.js\"" >> wrangler.toml
           echo "compatibility_date = \"2024-05-23\"" >> wrangler.toml
@@ -100,15 +63,15 @@ jobs:
           echo "routes = [" >> wrangler.toml
           echo "  { pattern = \"${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
 
-          # Loop through each domain from customdomain.txt, ignoring blank lines
+          # Loop melalui setiap domain dari customdomain.txt, lewati baris kosong
           grep -vE '^\s*$' customdomain.txt | while read -r domain; do
             echo "  { pattern = \"$domain.${{ inputs.main_domain }}\", custom_domain = true }," >> wrangler.toml
           done
 
-          # Remove the trailing comma from the last line
+          # Hapus koma terakhir dari baris terakhir
           sed -i '$ s/,$//' wrangler.toml
           
-          # Close the routes array
+          # Tutup array routes
           echo "]" >> wrangler.toml
 
       - name: Deploy to Cloudflare
