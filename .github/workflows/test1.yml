@@ -71,23 +71,11 @@ jobs:
           echo "]" >> wrangler.toml
           echo "" >> wrangler.toml
           
-          echo "[env.production]" >> wrangler.toml
-          echo "name = \"vless-worker-prod\"" >> wrangler.toml
-          echo "" >> wrangler.toml
 
           echo "[build]" >> wrangler.toml
           echo "command = \"\"" >> wrangler.toml
           echo "" >> wrangler.toml
 
-          echo "[vars]" >> wrangler.toml
-          echo "PROXY_IP = \"172.232.238.56\"" >> wrangler.toml
-          echo "DEBUG = \"true\"" >> wrangler.toml
-          echo "" >> wrangler.toml
-
-          echo "[[kv_namespaces]]" >> wrangler.toml
-          echo "binding = \"VLESS_CONFIG\"" >> wrangler.toml
-          echo "id = \"243d995a3bba45e5bad6f08a5484c2d8\"" >> wrangler.toml
-          echo "preview_id = \"vless-preview-config-id\"" >> wrangler.toml
 
       - name: Display Wrangler.toml for debugging
         run: |
