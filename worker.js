@@ -624,8 +624,9 @@ const htmlPage = `
                 <div class="info-item">
                     
                     <span class="info-value">VLESS</span>
-                    <span class="info-value">TROJAN</span>
                     <span class="info-value">Shadowsocks</span>
+                    <span class="info-value">TROJAN</span>
+                    
                 </div>
                 <!--
                 <div class="info-item">
