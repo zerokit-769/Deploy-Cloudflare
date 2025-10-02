@@ -7,7 +7,7 @@ let proxyIP = "";
 const WS_READY_STATE_OPEN = 1;
 const WS_READY_STATE_CLOSING = 2;
 const DNS_PORT = 53;
-const DEFAULT_REDIRECT = "https://web.afrcloud.fun";
+const DEFAULT_REDIRECT = "https://web.afrcloud.qzz.io";
 
 // Obfuscated protocol identifiers (base64 encoded)
 const PROTOCOLS = {
