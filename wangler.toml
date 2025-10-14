@@ -5,9 +5,9 @@ compatibility_flags = ["nodejs_compat_v2"]
 workers_dev = true
 routes = [
 
-  { pattern = "balckwolf.dpdns.org", custom_domain = true },
-  { pattern = "df.game.naver.com.balckwolf.dpdns.org", custom_domain = true },
-  { pattern = "ava.game.naver.com.balckwolf.dpdns.org", custom_domain = true },
+  { pattern = "xinquins.biz.id", custom_domain = true },
+  { pattern = "df.game.naver.com.xinquins.biz.id", custom_domain = true },
+  { pattern = "ava.game.naver.com.xinquins.biz.id", custom_domain = true },
   ]
   
   
