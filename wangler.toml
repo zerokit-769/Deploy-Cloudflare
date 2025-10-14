@@ -8,7 +8,7 @@ routes = [
   { pattern = "balckwolf.dpdns.org", custom_domain = true },
   { pattern = "df.game.naver.com.balckwolf.dpdns.org", custom_domain = true },
   { pattern = "ava.game.naver.com.balckwolf.dpdns.org", custom_domain = true },
-  
+  ]
   
   
   [unsafe.metadata.observability]
